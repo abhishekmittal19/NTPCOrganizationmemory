@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Organizational Memory Portal | NTPC</title>
+    <link rel="icon" href="./ntpc.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: "#003c6c",
+                        secondary: "#f49c56",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        /* Make scrollbar look nice */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .bg-app {
+            background-color: #d1dde8;
+            /* To simulate the blurred background in the image */
+            background-image: linear-gradient(to bottom right, #dbe4ed, #c1d0de);
+        }
+
+        /* Collapsible Sidebar Styles */
+        #sidebar {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-text {
+            transition: opacity 0.2s, max-width 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 200px;
+            /* arbitrary max-width for animation */
+            opacity: 1;
+        }
+
+        #sidebar.collapsed {
+            width: 72px;
+        }
+
+        #sidebar.collapsed .sidebar-text {
+            opacity: 0;
+            max-width: 0;
+        }
+
+
+
+
+
+        #sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+
+        #sidebar.collapsed .nav-item .material-symbols-outlined {
+            margin-left: 0;
+        }
+
+        #sidebar.collapsed .nav-item .sidebar-text {
+            display: none;
+        }
+
+
+        #chart {
+            width: 100%;
+            height: 100%;
+
+        }
+    </style>
+</head>
+
+<body class="bg-app text-slate-800 font-sans antialiased overflow-hidden flex">
+    <!-- Side Navigation -->
+
+    <aside id="sidebar" class="w-50 bg-white flex flex-col z-50 border-r border-slate-200 h-screen shrink-0 ">
+
+        <!-- Logo -->
+        <div class="h-16 flex items-center px-4 border-b border-slate-200 shrink-0 gap-3">
+            <button id="menu-toggle"
+                class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors shrink-0 outline-none">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div>
+
+                <img id="sidebar-logo" alt="NTPC Logo" class="h-8 object-contain w-25" src="./ntpc.png" />
+            </div>
+
+        </div>
+        <nav class="flex-1 py-4 overflow-y-auto flex flex-col overflow-x-hidden ">
+            <!-- Navigation Items -->
+            <div class="space-y-1 px-3">
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 bg-[#eef4fa] text-[#1e4e79] relative rounded-lg font-medium transition-all"
+                    href="#">
+                    <div class="absolute left-0 top-1 bottom-1 w-1 bg-[#2a5b84] rounded-r-md"></div>
+                    <span class="material-symbols-outlined ml-1">speed</span>
+                    <span class="sidebar-text text-sm font-semibold">Dashboard</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">verified_user</span>
+                    <span class="sidebar-text text-sm">Audits</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">groups</span>
+                    <span class="sidebar-text text-sm">Minute of Meetings</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">insights</span>
+                    <span class="sidebar-text text-sm">LMIs</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">assignment</span>
+                    <span class="sidebar-text text-sm">SOPs</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">menu_book</span>
+                    <span class="sidebar-text text-sm">Manuals</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">lightbulb</span>
+                    <span class="sidebar-text text-sm">Feasibility Reports</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">mail</span>
+                    <span class="sidebar-text text-sm">Correspondences</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">workspace_premium</span>
+                    <span class="sidebar-text text-sm">Important Documents</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">mail</span>
+                    <span class="sidebar-text text-sm">Mail</span>
+                </a>
+                <a class="nav-item flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined ml-1">settings</span>
+                    <span class="sidebar-text text-sm">Settings</span>
+                </a>
+            </div>
+            <!-- Bottom Section -->
+
+        </nav>
+        <div class="p-2  border border-slate-200 bg-[#eef4fa] px-1">
+            <p class="text-xs font-semibold mb-2 text-black uppercase">Need Help?</p>
+            <p class="text-[11px] text-black mb-3">Check our guide for advanced portal management tools.</p>
+            <button
+                class=" py-2 bg-secondary-container text-black text-xs font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all">
+                Learn More
+            </button>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <!-- Top Bar -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-40">
+            <!-- Left: Search + Filters -->
+            <div class="flex-1 max-w-4xl pr-6">
+                <div
+                    class="p-2 flex items-center w-full bg-white border border-slate-300 rounded-md overflow-hidden h-[42px] shadow-sm focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-shadow">
+                    <div class="pl-1 text-slate-400 flex items-center">
+                        <span class="material-symbols-outlined text-[23px]">search</span>
+                    </div>
+                    <input type="text" placeholder="Search across Audits, MoMs, SOPs, Manuals, etc..."
+                        class="w-full px-2 py-2 text-[15px] text-slate-700 outline-none bg-transparent border-none placeholder:text-slate-500 font-normal text-sm focus:outline-none focus:ring-0" />
+                    <div class="flex items-center border-l border-slate-200 h-full">
+                        <button
+                            class="flex items-center gap-1.5 px-3 py-2 text-slate-700 text-[13px] hover:bg-slate-50 font-medium h-full">
+                            <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+                            Type
+                        </button>
+                        <div class="h-4 w-[1px] bg-slate-300"></div>
+                        <button
+                            class="flex items-center gap-1.5 px-3 py-2 text-slate-700 text-[13px] hover:bg-slate-50 font-medium h-full">
+                            <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                            Date
+                        </button>
+                        <div class="h-4 w-[1px] bg-slate-300"></div>
+                        <button
+                            class="flex items-center gap-1.5 px-3 py-2 text-slate-700 text-[13px] hover:bg-slate-50 font-medium h-full">
+                            <span class="material-symbols-outlined text-[18px]">domain</span>
+                            Department
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Right: Profile -->
+            <div class="flex items-center shrink-0">
+                <div class="flex items-center gap-1">
+                    <img class="w-8 h-8 rounded-full object-cover border border-slate-200"
+                        src="https://i.pravatar.cc/150?img=11" alt="User" />
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center leading-none mb-1">
+                            <span class="text-[15px] font-normal text-slate-900">Karan Sharma<span
+                                    class="text-black font-normal ml-0.5 mr-0.5">|</span></span>
+
+                        </div>
+                        <span class="text-[13px] text-slate-600 leading-none">NTPC Corporate</span>
+                    </div>
+                    <div class="mt-2">
+                        <span
+                            class="material-symbols-outlined text-slate-500 text-[16px] cursor-pointer">expand_more</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Page Content Scrollable Area -->
+        <div class="flex-1 overflow-y-auto p-6 lg:p-2">
+            <div class="max-w-[1400px] mx-auto space-y-5">
+
+                <!-- Header Title Row -->
+                <div class="flex justify-between items-center">
+                    <h1 class="text-[23px] font-normal text-slate-900 flex items-baseline gap-2">
+                        Repository Overview
+                        <span class="text-[20px] font-normal text-black  atracking-wide">(less generic than 'Command
+                            Center')</span>
+                    </h1>
+                    <div class="flex items-center text-slate-600 gap-1.5 font-medium">
+                        <span
+                            class="material-symbols-outlined text-[#4d86ab] filled text-[20px]">workspace_premium</span>
+                        <span class="text-[13px] font-bold text-slate-800">Single Source of Truth</span>
+                    </div>
+                </div>
+                <!-- Main Grid -->
+                <div class="grid grid-cols-12 gap-5">
+
+                    <!-- Top Left: Browse Repository -->
+                    <div class="col-span-7 bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+
+
+                        <div class="flex gap-4">
+                            <!-- Left Stacked Column -->
+
+
+                            <!-- Right Grid Column -->
+                            <div class="w-[72%] grid grid-cols-4 gap-3">
+                                <div
+                                    class="bg-[#518fbe]  p-3 flex flex-col items-center justify-center text-white shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span
+                                        class="material-symbols-outlined text-[50px] mb-1.5 filled text-[#154669]">verified_user</span>
+                                    <span class="text-[17px] font-normal text-black">Audits</span>
+                                </div>
+                                <div
+                                    class="bg-[#90bbdb]  p-3 flex flex-col items-center justify-center text-[#1a3a54] shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span
+                                        class="material-symbols-outlined text-[50px] mb-1.5 filled text-[#154669]">groups</span>
+                                    <span class="text-[17px] font-normal text-black">MoM</span>
+                                </div>
+                                <div
+                                    class="bg-[#90bbdb]  p-3 flex flex-col items-center justify-center text-[#1a3a54] shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span
+                                        class="material-symbols-outlined text-[50px] mb-1.5 filled text-[#154669]">assignment</span>
+                                    <span class="text-[17px] font-normal text-black">SOPs</span>
+                                </div>
+                                <div
+                                    class="bg-[#90bbdb]  p-3 flex flex-col items-center justify-center text-[#1a3a54] shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span
+                                        class="material-symbols-outlined text-[50px] mb-1.5 filled text-[#154669]">insights</span>
+                                    <span class="text-[17px] font-normal text-black">LMIs</span>
+                                </div>
+                                <div
+                                    class="bg-[#90bbdb]  p-3 flex flex-col items-center justify-center text-[#1a3a54] shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span
+                                        class="material-symbols-outlined text-[50px] mb-1.5 filled text-[#154669]">menu_book</span>
+                                    <span class="text-[17px] font-normal text-black">Manuals</span>
+                                </div>
+                                <div
+                                    class="bg-[#90bbdb]  p-3 flex flex-col items-center justify-center text-[#1a3a54] shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[50px] text-[#154669] ">lightbulb</span>
+                                    <span class="text-[17px] font-normal text-black">Feasibility</span>
+                                </div>
+                                <div
+                                    class="bg-[#90bbdb] px-5 flex flex-col items-center justify-center text-[#1a3a54] shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[50px] mb-1.5 filled">mail</span>
+                                    <span
+                                        class="text-[13px] font-normal overflow-hidden  text-black text-center leading-tight">Correspondences</span>
+                                </div>
+                                <div
+                                    class="bg-[#ef8d43]  p-3 flex flex-col items-center justify-center text-white shadow-lg aspect-square max-h-[110px] hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
+                                    <span
+                                        class="material-symbols-outlined text-[50px] mb-1 filled text-[#7e3702]">workspace_premium</span>
+                                    <span
+                                        class="text-[15px] truncate mx-2 font-normal text-black text-center leading-tight">Important
+                                        Docs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Top Right: Recent Activity Feed -->
+                    <div class="col-span-5 bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col">
+                        <h1 class="font-normal text-xl">Document type Access</h1>
+                        <div id="chart"></div>
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="grid grid-col-2 m-2">
+                    <div>
+                        <p class="text-lg font-medium">Quick Actions</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        <!-- Documents Viewed -->
+                        <div
+                            class="bg-white py-4 px-2 metric-card-shadow flex flex-col justify-between  relative overflow-hidden h-36">
+                            <div class="flex justify-between items-start gap-2">
+                                <div class="bg-[#1849fd] p-2 rounded-xl text-white"><svg class="w-6 h-6"
+                                        fill="currentColor" viewbox="0 0 20 20">
+                                        <path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414L13.586 3H9z">
+                                        </path>
+                                        <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
+                                    </svg></div>
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex">
+                                        <span
+                                            class="text-gray-500 text-xs font-semibold truncate uppercase tracking-wider">
+                                            Documents
+                                            Viewed</span>
+                                        <span class="text-gray-400 cursor-help"><svg class="w-4 h-4" fill="currentColor"
+                                                viewbox="0 0 20 20">
+                                                <path clip-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                    fill-rule="evenodd"></path>
+                                            </svg>
+                                        </span>
+
+
+                                    </div>
+                                    <div>
+
+                                        <span class="text-xl font-bold text-gray-800">12,480</span>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div>
+
+                                <div class="flex flex-colitems-baseline space-x-2">
+
+                                    <span class="text-green-500 text-xs font-bold flex items-center"><svg
+                                            class="w-3 h-3 mr-0.5" fill="currentColor" viewbox="0 0 20 20">
+                                            <path clip-rule="evenodd"
+                                                d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                                                fill-rule="evenodd"></path>
+                                        </svg>12.5%</span>
+
+                                </div>
+                                <span class="text-xs">
+                                    vs last months
+                                </span>
+                            </div>
+
+                            <canvas class="absolute bottom-4 right-4 w-16 h-8" data-purpose="sparkline-blue"></canvas>
+                        </div>
+
+                        <!-- Downloads (Fixed) -->
+                        <div
+                            class="bg-white p-4 metric-card-shadow flex flex-col justify-between relative overflow-hidden h-36">
+                            <div class="flex gap-2 items-start">
+                                <!-- Icon -->
+                                <div class="bg-green-600 p-2 rounded-xl text-white">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                    </svg>
+                                </div>
+
+                                <!-- Text Content -->
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex">
+                                        <span class="text-gray-500 text-xs font-semibold uppercase tracking-wider">
+                                            Downloads
+                                        </span>
+                                        <span class="text-gray-400 cursor-help">
+                                            <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20">
+                                                <path clip-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                    fill-rule="evenodd"></path>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <span class="text-xl font-bold text-gray-800">8,734</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Section -->
+                            <div>
+                                <div class="flex items-baseline space-x-2">
+                                    <span class="text-green-500 text-xs font-bold flex items-center">
+                                        <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewbox="0 0 20 20">
+                                            <path clip-rule="evenodd"
+                                                d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                                                fill-rule="evenodd"></path>
+                                        </svg>
+                                        8.2%
+                                    </span>
+                                </div>
+                                <span class="text-xs">vs last months</span>
+                            </div>
+
+                            <canvas class="absolute bottom-4 right-4 w-16 h-8" data-purpose="sparkline-green"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </main>
+    <script>
+        // Initialize the ECharts instance
+        var chartDom = document.getElementById('chart');
+
+        var myChart = echarts.init(chartDom);
+        var option = {
+            title: {
+                left: '0',
+                top: '0',
+                textStyle: {
+                    color: '#202124',
+                    fontSize: 18,
+                    fontWeight: 600
+                }
+            },
+            color: [
+                '#1f5a84', '#4d80a6', '#6a99b8', '#8db3cc', '#bed5e5', '#f3b985'
+            ],
+            series: [
+                {
+                    name: 'Access',
+                    type: 'pie',
+                    radius: ['45%', '75%'],
+                    center: ['50%', '55%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        position: 'outside',
+                        formatter: '{name|{b}}\n{value|{c}%}',
+                        rich: {
+                            name: {
+                                fontSize: 14,
+                                color: '#333',
+                                fontWeight: 600,
+                                lineHeight: 18,
+                                align: 'center'
+                            },
+                            value: {
+                                fontSize: 13,
+                                color: '#666',
+                                align: 'center'
+                            }
+                        }
+                    },
+                    labelLine: {
+                        show: true,
+                        length: 25,
+                        length2: 35,
+                        lineStyle: {
+                            color: '#999',
+                            width: 1
+                        }
+                    },
+                    data: [
+                        { value: 35, name: 'SOPs' },
+                        { value: 25, name: 'MoMs' },
+                        { value: 15, name: 'Manuals' },
+                        { value: 10, name: 'LMIs' },
+                        { value: 10, name: 'Feasibility' },
+                        { value: 5, name: 'Audits' }
+                    ]
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+    </script>
+
+
+    <script>
+        const toggleBtn = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+    </script>
+
+    <script data-purpose="sparkline-renderer">
+        // Helper to draw a simple sparkline on canvas
+        function drawSparkline(canvasId, color, points) {
+            const canvas = document.querySelector(`canvas[data-purpose="${canvasId}"]`);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+
+            // Set logical size and scale for high DPI
+            const w = 64;
+            const h = 32;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            ctx.scale(dpr, dpr);
+
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            const xStep = w / (points.length - 1);
+            const yMax = Math.max(...points);
+            const yMin = Math.min(...points);
+            const yRange = yMax - yMin || 1;
+
+            points.forEach((p, i) => {
+                const x = i * xStep;
+                const y = h - ((p - yMin) / yRange) * (h - 4) - 2;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Add a gradient area below
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.closePath();
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, color + '33');
+            grad.addColorStop(1, color + '00');
+            ctx.fillStyle = grad;
+            ctx.fill();
+        }
+
+        // Initialize random-looking sparklines
+        window.addEventListener('load', () => {
+            drawSparkline('sparkline-blue', '#3b82f6', [10, 15, 12, 18, 14, 22, 20]);
+            drawSparkline('sparkline-green', '#10b981', [12, 10, 14, 13, 17, 15, 20]);
+            drawSparkline('sparkline-orange', '#f59e0b', [20, 18, 22, 15, 12, 14, 10]);
+            drawSparkline('sparkline-purple', '#8b5cf6', [10, 12, 11, 15, 14, 20, 18]);
+            drawSparkline('sparkline-cyan', '#06b6d4', [15, 17, 14, 18, 16, 22, 21]);
+        });
+    </script>
+</body>
+
+</html>
